@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ethiopian Orthodox Tewahedo Church</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #1a1a2e;
+            --secondary: #16213e;
+            --gold: #f4d03f;
+            --white: #ffffff;
+            --light: #f8f9fa;
+        }
+        body { font-family: 'Segoe UI', sans-serif; line-height: 1.6; color: #333; background: var(--light); }
+        a { text-decoration: none; }
+
+        /* === NAVIGATION WITH LOGO === */
+        header {
+            background: var(--primary);
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        .logo img {
+            height: 50px;
+            border-radius: 50%;
+            border: 3px solid var(--gold);
+            transition: all 0.3s;
+            box-shadow: 0 0 15px rgba(244,208,63,0.4);
+        }
+        .logo img:hover { transform: scale(1.1); box-shadow: 0 0 25px rgba(244,208,63,0.7); }
+        .logo span {
+            color: var(--gold);
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-left: 12px;
+        }
+        nav ul { display: flex; list-style: none; }
+        nav li { margin-left: 2rem; }
+        nav a { color: var(--white); font-weight: 500; transition: color 0.3s; }
+        nav a:hover { color: var(--gold); }
+
+        /* === HERO, SECTIONS, GRID, CARD === */
+        .hero {
+            background: linear-gradient(rgba(26,26,46,0.85), rgba(26,26,46,0.85)),
+                        url('https://source.unsplash.com/1600x900/?lalibela,ethiopia') center/cover;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+        }
+        .hero-content { max-width: 800px; padding: 0 2rem; animation: fadeIn 1.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        h1 { font-size: 3.8rem; margin-bottom: 1rem; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+        .btn {
+            display: inline-block;
+            background: var(--gold);
+            color: var(--primary);
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            margin-top: 1.5rem;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        .btn:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(244,208,63,0.4); }
+
+        section { padding: 6rem 2rem; max-width: 1200px; margin: 0 auto; }
+        .section-title { text-align: center; font-size: 2.5rem; margin-bottom: 3rem; color: var(--primary); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            color: #333;
+        }
+        .card:hover { transform: translateY(-10px); }
+
+        /* === PHOTO GALLERY === */
+        #gallery { background: var(--secondary); color: var(--white); }
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            padding: 2rem 0;
+        }
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            cursor: pointer;
+            transition: transform 0.4s;
+        }
+        .gallery-item:hover { transform: scale(1.05); }
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s;
+        }
+        .gallery-item:hover img { transform: scale(1.1); }
+        .gallery-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            color: white;
+            padding: 1.5rem 1rem 1rem;
+            font-size: 1rem;
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+        .gallery-item:hover .gallery-caption { opacity: 1; }
+
+        /* Lightbox */
+        .lightbox {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95);
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        .lightbox.active { display: flex; }
+        .lightbox img {
+            max-width: 90%;
+            max-height: 90vh;
+            border: 8px solid var(--gold);
+            border-radius: 12px;
+            box-shadow: 0 0 40px rgba(244,208,63,0.6);
+        }
+        .lightbox-caption {
+            position: absolute;
+            bottom: 30px;
+            color: white;
+            font-size: 1.3rem;
+            text-align: center;
+            text-shadow: 0 2px 10px black;
+        }
+        .close-lightbox {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 3rem;
+            color: white;
+            cursor: pointer;
+            text-shadow: 0 0 10px black;
+        }
+
+        footer {
+            background: var(--primary);
+            color: var(--white);
+            text-align: center;
+            padding: 3rem;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            nav { flex-direction: column; padding: 1rem; }
+            .logo img { height: 40px; }
+            h1 { font-size: 2.8rem; }
+            .gallery-grid { grid-template-columns: 1fr 1fr; }
+        }
+        .hero{
+            background-image: linear-gradient(rgba(26,26,46,0.85), rgba(26,26,46,0.85)), url('pexels-lan-yao-324969-20865974.jpg');
+            background-size: cover;
+            background-position: center;
+            min-height: 60vh;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVIGATION -->
+    <header>
+        <nav>
+            <a href="#" class="logo">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Gebraiel">
+                <span>EOTC</span>
+            </a>
+            <ul>
+                <li><a href="#about">About</a></li>
+                <li><a href="#beliefs">Beliefs</a></li>
+                <li><a href="#events">Events</a></li>
+                <li><a href="#gallery">Gallery</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Welcome Tepi kdus Mickaiel Orthodox Tewahedo Church</h1>
+            <p>Ancient Faith • Living Tradition • One in Christ (Tewahedo) since 2014 E.C</p>
+            <a href="#about" class="btn">Discover Our Faith</a>
+        </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about">
+        <h2 class="section-title">About Us</h2>
+        <p style="text-align:center;max-width:800px;margin:0 auto 3rem;">The Ethiopian Orthodox Tewahedo Church is one of the oldest Christian denominations...</p>
+        <div class="grid">
+            <div class="card"><h3>Our History</h3><p>Founded in 2014 E.C by St. Frumentius...</p></div>
+            <div class="card"><h3>Global Reach</h3><p>Over 50 million faithful worldwide...</p></div>
+            <div class="card"><h3>Community</h3><p>Feasts, fasting, and charity...</p></div>
+        </div>
+    </section>
+
+    <!-- BELIEFS -->
+    <section id="beliefs" style="background:var(--secondary);color:white;">
+        <h2 class="section-title">Core Beliefs</h2>
+        <div class="grid">
+            <div class="card" style="background:rgba(255,255,255,0.1);"><h3>The Trinity</h3><p>One God in three persons...</p></div>
+            <div class="card" style="background:rgba(255,255,255,0.1);"><h3>Miaphysitism</h3><p>Christ’s single united nature...</p></div>
+            <div class="card" style="background:rgba(255,255,255,0.1);"><h3>Seven Sacraments</h3><p>Holy mysteries that sanctify...</p></div>
+        </div>
+    </section>
+
+    <!-- EVENTS -->
+    <section id="events">
+        <h2 class="section-title">Upcoming Events</h2>
+        <div class="grid">
+            <div class="card"><h3>Timkat 2014</h3><p>January 19 – Epiphany celebration</p></div>
+            <div class="card"><h3>Friday Bible Study</h3><p>Every week, 7 PM (in-person & online)</p></div>
+            <div class="card"><h3>Youth Retreat</h3><p>March 2014 – Faith & Fellowship</p></div>
+        </div>
+    </section>
+
+    <!-- === PHOTO GALLERY === -->
+    <section id="gallery">
+        <h2 class="section-title">Photo Gallery</h2>
+        <p style="text-align:center;max-width:800px;margin:0 auto 3rem;color:#ddd;">
+            Moments of faith, beauty, and tradition from Lalibela to diaspora communities.
+        </p>
+
+        <div class="gallery-grid">
+            <div class="gallery-item" data-caption="Rock-hewn Church of St. George, Lalibela">
+                <img src="photo_2025-10-23_20-48-43.jpg" alt="Lalibela">
+                <div class="gallery-caption">ቴፒ ግቤ ጉባኤ</div>
+            </div>
+            <div class="gallery-item" data-caption="Timkat (Epiphany) celebration in Gondar">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Timkat">
+                <div class="gallery-caption">ትምክት በቴፒ</div>
+            </div>
+            <div class="gallery-item" data-caption="Ancient Ge'ez manuscript illumination">
+                <img src="photo_2024-05-22_23-44-14.jpg" alt="Manuscript">
+                <div class="gallery-caption">2014 ዓ.ም</div>
+            </div>
+             <div class="gallery-item" data-caption="Ancient Ge'ez manuscript illumination">
+                <img src="photo_2025-05-06_21-24-15.jpg" alt="Manuscript">
+                <div class="gallery-caption">Ge'ez Illuminated Gospel</div>
+            </div>
+            <div class="gallery-item" data-caption="Priest in traditional vestments">
+                <img src="photo_2024-01-24_23-53-58.jpg" alt="Priest">
+                <div class="gallery-caption">ቴፒ ግቤ ጉባኤ</div>
+            </div>
+            <div class="gallery-item" data-caption="Debre Damo monastery">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Debre Damo">
+                <div class="gallery-caption">Debre Damo Monastery</div>
+            </div>
+            <div class="gallery-item" data-caption="Meskel celebration in Addis Ababa">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Meskel">
+                <div class="gallery-caption">Meskel Festival</div>
+            </div>
+            <div class="gallery-item" data-caption="Axum Obelisk and St. Mary of Zion">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Axum">
+                <div class="gallery-caption">Axum – Cradle of Ethiopian Christianity</div>
+            </div>
+            <div class="gallery-item" data-caption="Fasting prayer during Hudadi">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Prayer">
+                <div class="gallery-caption">Great Lent (Hudadi) Prayer</div>
+            </div>
+               <div class="gallery-item" data-caption="Ancient Ge'ez manuscript illumination">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Manuscript">
+                <div class="gallery-caption">Ge'ez Illuminated Gospel</div>
+            </div>
+            <div class="gallery-item" data-caption="Priest in traditional vestments">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Priest">
+                <div class="gallery-caption">Orthodox Priest</div>
+            </div>
+            <div class="gallery-item" data-caption="Debre Damo monastery">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Debre Damo">
+                <div class="gallery-caption">Debre Damo Monastery</div>
+            </div>
+            <div class="gallery-item" data-caption="Meskel celebration in Addis Ababa">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Meskel">
+                <div class="gallery-caption">Meskel Festival</div>
+            </div>
+            <div class="gallery-item" data-caption="Axum Obelisk and St. Mary of Zion">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Axum">
+                <div class="gallery-caption">Axum – Cradle of Ethiopian Christianity</div>
+            </div>
+            <div class="gallery-item" data-caption="Fasting prayer during Hudadi">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Prayer">
+                <div class="gallery-caption">Great Lent (Hudadi) Prayer</div>
+            </div>
+               <div class="gallery-item" data-caption="Ancient Ge'ez manuscript illumination">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Manuscript">
+                <div class="gallery-caption">Ge'ez Illuminated Gospel</div>
+            </div>
+            <div class="gallery-item" data-caption="Priest in traditional vestments">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Priest">
+                <div class="gallery-caption">Orthodox Priest</div>
+            </div>
+            <div class="gallery-item" data-caption="Debre Damo monastery">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Debre Damo">
+                <div class="gallery-caption">Debre Damo Monastery</div>
+            </div>
+            <div class="gallery-item" data-caption="Meskel celebration in Addis Ababa">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Meskel">
+                <div class="gallery-caption">Meskel Festival</div>
+            </div>
+            <div class="gallery-item" data-caption="Axum Obelisk and St. Mary of Zion">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Axum">
+                <div class="gallery-caption">Axum – Cradle of Ethiopian Christianity</div>
+            </div>
+            <div class="gallery-item" data-caption="Fasting prayer during Hudadi">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Prayer">
+                <div class="gallery-caption">Great Lent (Hudadi) Prayer</div>
+            </div>
+               <div class="gallery-item" data-caption="Ancient Ge'ez manuscript illumination">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Manuscript">
+                <div class="gallery-caption">Ge'ez Illuminated Gospel</div>
+            </div>
+            <div class="gallery-item" data-caption="Priest in traditional vestments">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Priest">
+                <div class="gallery-caption">Orthodox Priest</div>
+            </div>
+            <div class="gallery-item" data-caption="Debre Damo monastery">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Debre Damo">
+                <div class="gallery-caption">Debre Damo Monastery</div>
+            </div>
+            <div class="gallery-item" data-caption="Meskel celebration in Addis Ababa">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Meskel">
+                <div class="gallery-caption">Meskel Festival</div>
+            </div>
+            <div class="gallery-item" data-caption="Axum Obelisk and St. Mary of Zion">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Axum">
+                <div class="gallery-caption">Axum – Cradle of Ethiopian Christianity</div>
+            </div>
+            <div class="gallery-item" data-caption="Fasting prayer during Hudadi">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Prayer">
+                <div class="gallery-caption">Great Lent (Hudadi) Prayer</div>
+            </div>
+               <div class="gallery-item" data-caption="Ancient Ge'ez manuscript illumination">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Manuscript">
+                <div class="gallery-caption">Ge'ez Illuminated Gospel</div>
+            </div>
+            <div class="gallery-item" data-caption="Priest in traditional vestments">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Priest">
+                <div class="gallery-caption">Orthodox Priest</div>
+            </div>
+            <div class="gallery-item" data-caption="Debre Damo monastery">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Debre Damo">
+                <div class="gallery-caption">Debre Damo Monastery</div>
+            </div>
+            <div class="gallery-item" data-caption="Meskel celebration in Addis Ababa">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Meskel">
+                <div class="gallery-caption">Meskel Festival</div>
+            </div>
+            <div class="gallery-item" data-caption="Axum Obelisk and St. Mary of Zion">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Axum">
+                <div class="gallery-caption">Axum – Cradle of Ethiopian Christianity</div>
+            </div>
+            <div class="gallery-item" data-caption="Fasting prayer during Hudadi">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Prayer">
+                <div class="gallery-caption">Great Lent (Hudadi) Prayer</div>
+            </div>
+               <div class="gallery-item" data-caption="Ancient Ge'ez manuscript illumination">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Manuscript">
+                <div class="gallery-caption">Ge'ez Illuminated Gospel</div>
+            </div>
+            <div class="gallery-item" data-caption="Priest in traditional vestments">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Priest">
+                <div class="gallery-caption">Orthodox Priest</div>
+            </div>
+            <div class="gallery-item" data-caption="Debre Damo monastery">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Debre Damo">
+                <div class="gallery-caption">Debre Damo Monastery</div>
+            </div>
+            <div class="gallery-item" data-caption="Meskel celebration in Addis Ababa">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Meskel">
+                <div class="gallery-caption">Meskel Festival</div>
+            </div>
+            <div class="gallery-item" data-caption="Axum Obelisk and St. Mary of Zion">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Axum">
+                <div class="gallery-caption">Axum – Cradle of Ethiopian Christianity</div>
+            </div>
+            <div class="gallery-item" data-caption="Fasting prayer during Hudadi">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Prayer">
+                <div class="gallery-caption">Great Lent (Hudadi) Prayer</div>
+            </div>
+               <div class="gallery-item" data-caption="Ancient Ge'ez manuscript illumination">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Manuscript">
+                <div class="gallery-caption">Ge'ez Illuminated Gospel</div>
+            </div>
+            <div class="gallery-item" data-caption="Priest in traditional vestments">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Priest">
+                <div class="gallery-caption">Orthodox Priest</div>
+            </div>
+            <div class="gallery-item" data-caption="Debre Damo monastery">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Debre Damo">
+                <div class="gallery-caption">Debre Damo Monastery</div>
+            </div>
+            <div class="gallery-item" data-caption="Meskel celebration in Addis Ababa">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Meskel">
+                <div class="gallery-caption">Meskel Festival</div>
+            </div>
+            <div class="gallery-item" data-caption="Axum Obelisk and St. Mary of Zion">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Axum">
+                <div class="gallery-caption">Axum – Cradle of Ethiopian Christianity</div>
+            </div>
+            <div class="gallery-item" data-caption="Fasting prayer during Hudadi">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Prayer">
+                <div class="gallery-caption">Great Lent (Hudadi) Prayer</div>
+            </div>
+               <div class="gallery-item" data-caption="Ancient Ge'ez manuscript illumination">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Manuscript">
+                <div class="gallery-caption">Ge'ez Illuminated Gospel</div>
+            </div>
+            <div class="gallery-item" data-caption="Priest in traditional vestments">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Priest">
+                <div class="gallery-caption">Orthodox Priest</div>
+            </div>
+            <div class="gallery-item" data-caption="Debre Damo monastery">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Debre Damo">
+                <div class="gallery-caption">Debre Damo Monastery</div>
+            </div>
+            <div class="gallery-item" data-caption="Meskel celebration in Addis Ababa">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Meskel">
+                <div class="gallery-caption">Meskel Festival</div>
+            </div>
+            <div class="gallery-item" data-caption="Axum Obelisk and St. Mary of Zion">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Axum">
+                <div class="gallery-caption">Axum – Cradle of Ethiopian Christianity</div>
+            </div>
+            <div class="gallery-item" data-caption="Fasting prayer during Hudadi">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Prayer">
+                <div class="gallery-caption">Great Lent (Hudadi) Prayer</div>
+            </div>
+               <div class="gallery-item" data-caption="Ancient Ge'ez manuscript illumination">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Manuscript">
+                <div class="gallery-caption">Ge'ez Illuminated Gospel</div>
+            </div>
+            <div class="gallery-item" data-caption="Priest in traditional vestments">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Priest">
+                <div class="gallery-caption">Orthodox Priest</div>
+            </div>
+            <div class="gallery-item" data-caption="Debre Damo monastery">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Debre Damo">
+                <div class="gallery-caption">Debre Damo Monastery</div>
+            </div>
+            <div class="gallery-item" data-caption="Meskel celebration in Addis Ababa">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Meskel">
+                <div class="gallery-caption">Meskel Festival</div>
+            </div>
+            <div class="gallery-item" data-caption="Axum Obelisk and St. Mary of Zion">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Axum">
+                <div class="gallery-caption">Axum – Cradle of Ethiopian Christianity</div>
+            </div>
+            <div class="gallery-item" data-caption="Fasting prayer during Hudadi">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Prayer">
+                <div class="gallery-caption">Great Lent (Hudadi) Prayer</div>
+            </div>
+               <div class="gallery-item" data-caption="Ancient Ge'ez manuscript illumination">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Manuscript">
+                <div class="gallery-caption">Ge'ez Illuminated Gospel</div>
+            </div>
+            <div class="gallery-item" data-caption="Priest in traditional vestments">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Priest">
+                <div class="gallery-caption">Orthodox Priest</div>
+            </div>
+            <div class="gallery-item" data-caption="Debre Damo monastery">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Debre Damo">
+                <div class="gallery-caption">Debre Damo Monastery</div>
+            </div>
+            <div class="gallery-item" data-caption="Meskel celebration in Addis Ababa">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Meskel">
+                <div class="gallery-caption">Meskel Festival</div>
+            </div>
+            <div class="gallery-item" data-caption="Axum Obelisk and St. Mary of Zion">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Axum">
+                <div class="gallery-caption">Axum – Cradle of Ethiopian Christianity</div>
+            </div>
+            <div class="gallery-item" data-caption="Fasting prayer during Hudadi">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Prayer">
+                <div class="gallery-caption">Great Lent (Hudadi) Prayer</div>
+            </div>
+               <div class="gallery-item" data-caption="Ancient Ge'ez manuscript illumination">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Manuscript">
+                <div class="gallery-caption">Ge'ez Illuminated Gospel</div>
+            </div>
+            <div class="gallery-item" data-caption="Priest in traditional vestments">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Priest">
+                <div class="gallery-caption">Orthodox Priest</div>
+            </div>
+            <div class="gallery-item" data-caption="Debre Damo monastery">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Debre Damo">
+                <div class="gallery-caption">Debre Damo Monastery</div>
+            </div>
+            <div class="gallery-item" data-caption="Meskel celebration in Addis Ababa">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Meskel">
+                <div class="gallery-caption">Meskel Festival</div>
+            </div>
+            <div class="gallery-item" data-caption="Axum Obelisk and St. Mary of Zion">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Axum">
+                <div class="gallery-caption">Axum – Cradle of Ethiopian Christianity</div>
+            </div>
+            <div class="gallery-item" data-caption="Fasting prayer during Hudadi">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Prayer">
+                <div class="gallery-caption">Great Lent (Hudadi) Prayer</div>
+            </div>
+               <div class="gallery-item" data-caption="Ancient Ge'ez manuscript illumination">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Manuscript">
+                <div class="gallery-caption">Ge'ez Illuminated Gospel</div>
+            </div>
+            <div class="gallery-item" data-caption="Priest in traditional vestments">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Priest">
+                <div class="gallery-caption">Orthodox Priest</div>
+            </div>
+            <div class="gallery-item" data-caption="Debre Damo monastery">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Debre Damo">
+                <div class="gallery-caption">Debre Damo Monastery</div>
+            </div>
+            <div class="gallery-item" data-caption="Meskel celebration in Addis Ababa">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Meskel">
+                <div class="gallery-caption">Meskel Festival</div>
+            </div>
+            <div class="gallery-item" data-caption="Axum Obelisk and St. Mary of Zion">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Axum">
+                <div class="gallery-caption">Axum – Cradle of Ethiopian Christianity</div>
+            </div>
+            <div class="gallery-item" data-caption="Fasting prayer during Hudadi">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Prayer">
+                <div class="gallery-caption">Great Lent (Hudadi) Prayer</div>
+            </div>   <div class="gallery-item" data-caption="Ancient Ge'ez manuscript illumination">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Manuscript">
+                <div class="gallery-caption">Ge'ez Illuminated Gospel</div>
+            </div>
+            <div class="gallery-item" data-caption="Priest in traditional vestments">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Priest">
+                <div class="gallery-caption">Orthodox Priest</div>
+            </div>
+            <div class="gallery-item" data-caption="Debre Damo monastery">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Debre Damo">
+                <div class="gallery-caption">Debre Damo Monastery</div>
+            </div>
+            <div class="gallery-item" data-caption="Meskel celebration in Addis Ababa">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Meskel">
+                <div class="gallery-caption">Meskel Festival</div>
+            </div>
+            <div class="gallery-item" data-caption="Axum Obelisk and St. Mary of Zion">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Axum">
+                <div class="gallery-caption">Axum – Cradle of Ethiopian Christianity</div>
+            </div>
+            <div class="gallery-item" data-caption="Fasting prayer during Hudadi">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Prayer">
+                <div class="gallery-caption">Great Lent (Hudadi) Prayer</div>
+            </div>   <div class="gallery-item" data-caption="Ancient Ge'ez manuscript illumination">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Manuscript">
+                <div class="gallery-caption">Ge'ez Illuminated Gospel</div>
+            </div>
+            <div class="gallery-item" data-caption="Priest in traditional vestments">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Priest">
+                <div class="gallery-caption">Orthodox Priest</div>
+            </div>
+            <div class="gallery-item" data-caption="Debre Damo monastery">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Debre Damo">
+                <div class="gallery-caption">Debre Damo Monastery</div>
+            </div>
+            <div class="gallery-item" data-caption="Meskel celebration in Addis Ababa">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Meskel">
+                <div class="gallery-caption">Meskel Festival</div>
+            </div>
+            <div class="gallery-item" data-caption="Axum Obelisk and St. Mary of Zion">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Axum">
+                <div class="gallery-caption">Axum – Cradle of Ethiopian Christianity</div>
+            </div>
+            <div class="gallery-item" data-caption="Fasting prayer during Hudadi">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Prayer">
+                <div class="gallery-caption">Great Lent (Hudadi) Prayer</div>
+            </div>
+               <div class="gallery-item" data-caption="Ancient Ge'ez manuscript illumination">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Manuscript">
+                <div class="gallery-caption">Ge'ez Illuminated Gospel</div>
+            </div>
+            <div class="gallery-item" data-caption="Priest in traditional vestments">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Priest">
+                <div class="gallery-caption">Orthodox Priest</div>
+            </div>
+            <div class="gallery-item" data-caption="Debre Damo monastery">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Debre Damo">
+                <div class="gallery-caption">Debre Damo Monastery</div>
+            </div>
+            <div class="gallery-item" data-caption="Meskel celebration in Addis Ababa">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Meskel">
+                <div class="gallery-caption">Meskel Festival</div>
+            </div>
+            <div class="gallery-item" data-caption="Axum Obelisk and St. Mary of Zion">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Axum">
+                <div class="gallery-caption">Axum – Cradle of Ethiopian Christianity</div>
+            </div>
+            <div class="gallery-item" data-caption="Fasting prayer during Hudadi">
+                <img src="photo_2024-03-05_06-37-45.jpg" alt="Prayer">
+                <div class="gallery-caption">Great Lent (Hudadi) Prayer</div>
+            </div>
+            <!-- Add more photos easily -->
+        </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" style="background:var(--light);">
+        <h2 class="section-title">Contact & Support</h2>
+        <div class="grid">
+            <div class="card"><h3>Visit Us</h3><p>TEPI<br>info@Mickaieleotc.org</p></div>
+            <div class="card"><h3>Donate</h3><p>Support ancient churches & charities<br><a href="#" style="color:var(--gold);">Secure Donation →</a></p></div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>© 2025 Ethiopian Orthodox Tewahedo Church. All rights reserved. | <a href="#">Privacy Policy</a></p>
+    </footer>
+
+    <!-- LIGHTBOX -->
+    <div class="lightbox" id="lightbox">
+        <span class="close-lightbox" onclick="closeLightbox()">×</span>
+        <img src="" alt="" id="lightbox-img">
+        <div class="lightbox-caption" id="lightbox-caption"></div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script>
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(a => {
+            a.addEventListener('click', e => {
+                e.preventDefault();
+                document.querySelector(a.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+
+        // Gallery Lightbox
+        document.querySelectorAll('.gallery-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const img = item.querySelector('img').src;
+                const caption = item.getAttribute('data-caption');
+                document.getElementById('lightbox-img').src = img;
+                document.getElementById('lightbox-caption').textContent = caption;
+                document.getElementById('lightbox').classList.add('active');
+            });
+        });
+
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.remove('active');
+        }
+
+        // Close lightbox when clicking outside image
+        document.getElementById('lightbox').addEventListener('click', e => {
+            if (e.target !== document.getElementById('lightbox-img')) {
+                closeLightbox();
+            }
+        });
+    </script>
+</body>
+</html>
